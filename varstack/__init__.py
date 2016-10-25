@@ -6,6 +6,7 @@ Varstack - A system to create stacked configuration structures
 __all__ = [ "Varstack" ]
 
 import logging, re, yaml, os
+import glob
 from pprint import pprint
 
 try:
@@ -43,7 +44,10 @@ class Varstack:
         self.config.update(yaml.safe_load(cfh))
         cfh.close()
         for path in self.config['stack']:
-            fullpaths = self.__substitutePathVariables(self.config['datadir']+'/'+path+'.yaml', variables)
+            if path.endswith('/'):
+                fullpaths = glob.glob(self.config['datadir']+'/'+path+'*.yaml')
+            else:
+                fullpaths = self.__substitutePathVariables(self.config['datadir']+'/'+path+'.yaml', variables)
             if not fullpaths:
                 continue
             for fullpath in fullpaths:
